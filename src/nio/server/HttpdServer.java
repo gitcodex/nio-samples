@@ -39,7 +39,7 @@ public class HttpdServer {
     	try {    		
     		fis = new FileInputStream(file);
     		FileChannel fileChannel = fis.getChannel();
-    		int bytesRead = 0;  byte [] buff = new byte [1000]; char prev = 'A';
+    		int bytesRead = 0;  byte [] buff = new byte [1000]; 
     		ByteBuffer bb2 = ByteBuffer.allocateDirect(1000*1024);
     		StringBuilder httpRequest = new StringBuilder();
     		String [] httpRequestLines = new String[10];
