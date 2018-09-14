@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.Arrays;
 
 import nio.test.NioUtils;
 
@@ -41,14 +42,17 @@ public class HttpdServer {
     		int bytesRead = 0;  byte [] buff = new byte [1000]; char prev = 'A';
     		ByteBuffer bb2 = ByteBuffer.allocateDirect(1000*1024);
     		StringBuilder httpRequest = new StringBuilder();
-    		
+    		String [] httpRequestLines = new String[10];
     		boolean requestRead = false;
+    		int lineCtr = 0;
     		while ((bytesRead = socketChannel.read(bb2)) != -1) {
     			bb2.flip();
     			while(bb2.hasRemaining() && !requestRead) {
     				char ch1 = (char)bb2.get();    				
     				httpRequest.append(ch1);
     				if (ch1 == '\r') {
+    					httpRequestLines [lineCtr++] = httpRequest.toString().trim();
+    					httpRequest = new StringBuilder();
     					char ch2 = (char)bb2.get();
     					char ch3 = (char)bb2.get();
     					char ch4 = (char)bb2.get();
@@ -67,8 +71,13 @@ public class HttpdServer {
     			}
     		}
     		
-    		NioUtils.log("requestRead:" + requestRead);
-    		NioUtils.log("req:"+httpRequest);
+    		//NioUtils.log("requestRead:" + requestRead);
+    		//NioUtils.log("req:"+httpRequest);
+    		httpRequestLines = Arrays.copyOf(httpRequestLines, lineCtr);
+    		for (String line : httpRequestLines) {
+    			System.out.println(line);
+			}
+    		
     		while ((bytesRead = fileChannel.read(byteBuffer)) != -1) {
     			byteBuffer.flip();
     			while (byteBuffer.hasRemaining()) {    				
